@@ -6,6 +6,7 @@ const keyMap = {
     LEFT: 37,
 };
 
+
 const PLAYER_MOVE_STEP = 20;
 const MAP_WIDTH = 1000;
 const MAP_HEIGHT = 500;
@@ -13,29 +14,33 @@ const PLAYER_WIDTH = 20;
 const PLAYER_HEIGHT = 20;
 const OBSTACLES_WIDTH = 20;
 
-class Obstacle {    
-    element = document.querySelectorAll('.obstacle')[0];
+class Obstacle {
+    constructor(element, positionX, positionY, width, height){
 
+    this.element = element;
     //Position
-    x = this.element.offsetLeft;
-    y = this.element.offsetTop;
-    width = OBSTACLES_WIDTH;
-    height = this.element.offsetHeight;
+    this.positionX = positionX;
+    this.positionY = positionY;
+    this.width = width;
+    this.height = height;
+    this._initializePosition();
+    }
+
+    _initializePosition(){
+        this.element.style.left = `${positionX}px`;
+        this.element.style.top = `${positionY}px`;
+        this.element.style.height = `${height}px`;
+    }
+
 };
 
 const obstacle1 = new Obstacle({
-    element: 'suca',
-    x: '100px',
-    y: '0',
-    height: '300px'
+    element: document.querySelector('.obstacle:nth-child(2)'),
+    positionX: 100,
+    positionY: 0,
+    width: OBSTACLES_WIDTH,
+    height: 300
 });
-
-// const obstacle2 = new Obstacle({
-//     element: obstacle.item(1),
-//     x: '100',
-//     y: '0',
-//     height: '300px'
-// });
 
 class Player {
     //The fact that we write this properties here is a new thing. Before they had to be written inside the constructor
