@@ -1,153 +1,232 @@
+const board = document.querySelector('.board');
 
+// constant(like PI math constants not const declared) variables
 const keyMap = {
-    TOP: 38,
-    RIGHT: 39,
-    BOTTOM: 40,
-    LEFT: 37,
+  TOP: 38,
+  RIGHT: 39,
+  BOTTOM: 40,
+  LEFT: 37,
 };
-
 
 const PLAYER_MOVE_STEP = 20;
 const MAP_WIDTH = 1000;
 const MAP_HEIGHT = 500;
 const PLAYER_WIDTH = 20;
 const PLAYER_HEIGHT = 20;
-const OBSTACLES_WIDTH = 20;
 
 class Obstacle {
-    constructor(element, positionX, positionY, width, height){
+  element;
+  x;
+  y;
+  width;
+  height;
 
-    this.element = element;
-    //Position
-    this.positionX = positionX;
-    this.positionY = positionY;
+  constructor(x, y, width, height, position = 'top') {
+    this._createElement();
+
+    this.x = x;
+    this.y = y;
+    if (position === 'bottom') {
+      this.y = MAP_HEIGHT - height - y;
+    }
     this.width = width;
     this.height = height;
-    this._initializePosition();
-    }
 
-    _initializePosition(){
-        this.element.style.left = `${positionX}px`;
-        this.element.style.top = `${positionY}px`;
-        this.element.style.height = `${height}px`;
-    }
+    this._setPosition();
+  }
 
-};
+  _createElement() {
+    this.element = document.createElement('div');
+    this.element.classList.add('obstacle');
+    board.appendChild(this.element);
+  }
 
-const obstacle1 = new Obstacle({
-    element: document.querySelector('.obstacle:nth-child(2)'),
-    positionX: 100,
-    positionY: 0,
-    width: OBSTACLES_WIDTH,
-    height: 300
-});
+  _setPosition() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+    this.element.style.width = `${this.width}px`;
+    this.element.style.height = `${this.height}px`;
+  }
+
+  remove() {
+    this.element.remove();
+  }
+}
+
+const obstacles = [
+  new Obstacle(100, 0, 20, 400),
+  new Obstacle(200, 0, 20, 400, 'bottom'),
+  new Obstacle(300, 0, 20, 400),
+  new Obstacle(400, 0, 20, 400, 'bottom'),
+  new Obstacle(500, 0, 20, 400),
+  new Obstacle(600, 0, 20, 400, 'bottom'),
+  new Obstacle(700, 0, 20, 400),
+  new Obstacle(800, 0, 20, 400, 'bottom'),
+  new Obstacle(900, 0, 20, 400),
+];
 
 class Player {
-    //The fact that we write this properties here is a new thing. Before they had to be written inside the constructor
-    element = document.querySelector('.player');  //This is the square from DOM
-    x = 0;               //This is the position of the element
-    y = 0;
+  element = document.querySelector('.player');
+  x = 0;
+  y = 0;
+  width = PLAYER_WIDTH;
+  height = PLAYER_HEIGHT;
+  lives = document.querySelector('.lives-counter');
 
-    constructor() {
-        this._initMovement();  //This reference to the future instance (object) that will be created 
+  // when new Player is called, `this` is created
+  constructor() {
+    // console.log(this.element)
+    this._initMovement();
+  }
+
+  _initMovement() {
+    document.addEventListener('keydown', this._handleMovement.bind(this));
+  }
+
+  _handleMovement(event) {
+    switch (event.keyCode) {
+      case keyMap.TOP: {
+        this.moveTop();
+        break;
+      }
+      case keyMap.RIGHT: {
+        this.moveRight();
+        break;
+      }
+      case keyMap.BOTTOM: {
+        this.moveBottom();
+        break;
+      }
+      case keyMap.LEFT: {
+        this.moveLeft();
+        break;
+      }
     }
 
-    _initMovement() {
-        document.addEventListener('keydown', this._handleMovement.bind(this));  // this listen the keyboard arrows
-        //We add the .bind() method wich takes different arguments and the first is the context
-        //So we use 'this' as context for .bind(). This method can change the execution context of the object from where the function in called
+    if (this._isCollided()) {
+      alert('We collided');
+      this._resetPosition();
+    }
+  }
+
+  _resetPosition() {
+    this.x = 0;
+    this.y = 0;
+    this._updatePosition();
+  }
+
+  _isCollided() {
+    for (let i = 0; i < obstacles.length; i++) {
+      if (isCollision(this, obstacles[i])) {
+        return true;
+      }
     }
 
-    _handleMovement(event) {
-        switch (event.keyCode) {
-            case keyMap.TOP: {
-                this._moveTop();
-                break;
-            }
-            case keyMap.RIGHT: {
-                this._moveRight();
-                break;
-            }
-            case keyMap.BOTTOM: {
-                this._moveBottom();
-                break;
-            }
-            case keyMap.LEFT: {
-                this._moveLeft();
-                break;
-            }
-        }
+    return false;
+  }
+
+  moveTop() {
+    const newY = this.y - PLAYER_MOVE_STEP;
+
+    if (this._isMoveInBoundaries(this.x, newY)) {
+      this.y = newY;
+      this._updatePosition();
+    }
+  }
+
+  moveRight() {
+    const newX = this.x + PLAYER_MOVE_STEP;
+
+    if (this._isMoveInBoundaries(newX, this.y)) {
+      this.x = newX;
+      this._updatePosition();
+    }
+  }
+
+  moveBottom() {
+    const newY = this.y + PLAYER_MOVE_STEP;
+
+    if (this._isMoveInBoundaries(this.x, newY)) {
+      this.y = newY;
+      this._updatePosition();
+    }
+  }
+
+  moveLeft() {
+    const newX = this.x - PLAYER_MOVE_STEP;
+
+    if (this._isMoveInBoundaries(newX, this.y)) {
+      this.x = newX;
+      this._updatePosition();
+    }
+  }
+
+  _updatePosition() {
+    this.element.style.top = `${this.y}px`;
+    this.element.style.left = `${this.x}px`;
+  }
+
+  _isMoveInBoundaries(x, y) {
+    if (y < 0) {
+      return false;
     }
 
-    _moveTop() {
-        const newY = this.y - PLAYER_MOVE_STEP;
-        
-        if(this._isMoveInBoundaries(this.x, newY)){
-            this.y = newY;
-            this._updatePosition();
-        }
-    };
-
-    _moveRight() {
-        const newX = this.x + PLAYER_MOVE_STEP;  // We put it into the newX variable to be able to calculate the obstacles
-
-        if(this._isMoveInBoundaries(newX, this.y)){ // We send parameter to avoid discrepancies between the coordinates of the board and of the DOM
-            this.x = newX;
-            this._updatePosition();
-        }
-    };
-    
-    _moveBottom() {
-        const newY = this.y + PLAYER_MOVE_STEP;
-        
-        if(this._isMoveInBoundaries(this.x, newY)){
-            this.y = newY;
-            this._updatePosition();
-        }
-    };
-    
-    _moveLeft() {
-        const newX = this.x - PLAYER_MOVE_STEP;
-
-        if(this._isMoveInBoundaries(newX, this.y)){
-            this.x = newX;
-            this._updatePosition();
-        }
-    };
-    
-    _updatePosition() { //We create this for the repetitions
-        this.element.style.left = `${this.x}px`;
-        this.element.style.top = `${this.y}px`;
-    };
-
-    //Define the limits of the frame
-    _isMoveInBoundaries(x, y) { //we send parameters to this function to update the 
-        if(y < 0){
-            return false
-        }
-        
-        if(x < 0){
-            return false
-        }
-        
-        if(x > MAP_WIDTH - PLAYER_WIDTH){
-            return false
-        }
-        
-        if(y > MAP_HEIGHT - PLAYER_HEIGHT){
-            return false
-        }
-
-        return true
+    if (x < 0) {
+      return false;
     }
 
-};
+    if (x > MAP_WIDTH - PLAYER_WIDTH) {
+      return false;
+    }
+
+    if (y > MAP_HEIGHT - PLAYER_HEIGHT) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class GameEngine {
+  lives = 3;
+
+  constructor() {
+    new Player(); // player only moves up and down
+
+    setTimeout(this.loop.bind(this), 100);
+  }
+
+  loop() {
+    // create obstacle until reaching limit
+    // move all obstacles to left 1 unit
+    // check collision
+  }
+
+}
+
+
+new GameEngine();
 
 const p1 = new Player();
 
+// const pl = {
+//   key: 'player',
+//   test: function() {
+//     console.log('test is called')
+//   },
+//   callMe: function () {
+//     console.log(this);
+//     this.test();
+//   },
+// };
 
-//To do//
-// 1.When the player hit an obstacle show 'you are dead'. Also create obstacles and avoid the passing;
-// 2.When the player hit an obstacle reset position;
-// 3.Player has 3 lives. Display them in the board and remember them. After the 3 lives finishes 'Game over';
-// 4.(optional) try to create a dynamic scenario for the game
+// pl.callMe(); // pl -> this
+
+// const doc = {
+//   key: 'document',
+// };
+
+// // with bind we can hardcode the execution context(`this`)
+// doc.callMe = pl.callMe.bind(pl);
+// // console.log(doc);
+// doc.callMe(); //

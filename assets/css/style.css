@@ -2,6 +2,38 @@ body {
     background-color: lightgray;
     padding: 20px;
 }
+
+.header {
+    width: 1000px;
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.lives-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lives-counter {
+    width: 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.life {
+    background-color: rgb(255, 89, 89);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
 .board{
     width: 1000px;
     height: 500px;
@@ -21,49 +53,5 @@ body {
 .obstacle {
     background-color: rgb(76, 112, 124);
     position: absolute;
-    width: 20px;
 }
-/* 
-.obst-1{
-    top: 0;
-    left: 100px;
-}
-
-.obst-2{
-    bottom: 0;
-    left: 250px;
-    height: 400px;
-}
-
-.obst-3{
-    top: 0;
-    left: 400px;
-    height: 450px;
-}
-
-.obst-4{
-    bottom: 0;
-    left: 550px;
-}
-
-.obst-5{
-    top: 0;
-    left: 600px;
-}
-
-.obst-6{
-    bottom: 0;
-    left: 700px;
-}
-
-.obst-7{
-    top: 0;
-    left: 750px;
-}
-
-.obst-8{
-    bottom: 0;
-    left: 850px;
-} */
-
 
