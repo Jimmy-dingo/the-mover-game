@@ -1,4 +1,6 @@
 const board = document.querySelector('.board');
+const gameOver = document.querySelector('.game-over');
+const rePlayBtn = document.querySelector('.game-over button');
 
 // constant(like PI math constants not const declared) variables
 const keyMap = {
@@ -83,6 +85,37 @@ class Player {
     document.addEventListener('keydown', this._handleMovement.bind(this));
   }
 
+  //Handle lives function
+  _handleLives(){
+    const lifeList = document.querySelectorAll('.life');
+      for(let element of lifeList){
+        if(lifeList.length === 3){
+          lifeList[2].classList.value = '.unavailable';
+          return true
+        }
+        
+        if(lifeList.length === 2) {
+          lifeList[1].classList.value = '.unavailable';
+          return true
+        }
+
+        else {
+          lifeList[0].classList.value = '.unavailable';
+          alert('Game Over!');
+          gameOver.style = 'display: flex';
+          board.style = 'display: none';
+          rePlayBtn.addEventListener('click', this._playAgain.bind(this));
+          return false
+        }
+      }    
+    }
+  
+  //Replay button to refresh the page if 0 lives
+  _playAgain() {
+    location.reload();
+    return false;
+  }
+
   _handleMovement(event) {
     switch (event.keyCode) {
       case keyMap.TOP: {
@@ -105,7 +138,9 @@ class Player {
 
     if (this._isCollided()) {
       alert('We collided');
+      this._handleLives();
       this._resetPosition();
+      return true
     }
   }
 
@@ -118,11 +153,12 @@ class Player {
   _isCollided() {
     for (let i = 0; i < obstacles.length; i++) {
       if (isCollision(this, obstacles[i])) {
+        console.log('_isCollision function executed');
         return true;
       }
+      return false;
     }
 
-    return false;
   }
 
   moveTop() {
