@@ -221,48 +221,6 @@ class Player {
 
     return true;
   }
-}
-
-class GameEngine {
-  lives = 3;
-
-  constructor() {
-    new Player(); // player only moves up and down
-
-    setTimeout(this.loop.bind(this), 100);
-  }
-
-  loop() {
-    // create obstacle until reaching limit
-    // move all obstacles to left 1 unit
-    // check collision
-  }
-
-}
-
-
-new GameEngine();
+};
 
 const p1 = new Player();
-
-// const pl = {
-//   key: 'player',
-//   test: function() {
-//     console.log('test is called')
-//   },
-//   callMe: function () {
-//     console.log(this);
-//     this.test();
-//   },
-// };
-
-// pl.callMe(); // pl -> this
-
-// const doc = {
-//   key: 'document',
-// };
-
-// // with bind we can hardcode the execution context(`this`)
-// doc.callMe = pl.callMe.bind(pl);
-// // console.log(doc);
-// doc.callMe(); //
