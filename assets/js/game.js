@@ -153,7 +153,6 @@ class Player {
   _isCollided() {
     for (let i = 0; i < obstacles.length; i++) {
       if (isCollision(this, obstacles[i])) {
-        console.log('_isCollision function executed');
         return true;
       }
       return false;
